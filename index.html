@@ -1,114 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Vivy</title>
-
-<link rel="stylesheet" href="style.css">
-
-<!-- Firebase -->
-<script type="module" src="firebase.js"></script>
-
-</head>
-
 <body>
 
-<div id="app">
+<!-- LOGIN PAGE -->
+<div id="loginPage">
 
-<header class="topbar">
+<div class="loginBox">
 
-<div class="logo">
-💜 VIVY
-</div>
+<h1>💜 Vivy</h1>
 
-<div class="coins">
-🪙 <span id="coinBalance">0</span>
-</div>
+<p>Meet New People Worldwide</p>
 
-</header>
+<input id="email" type="email" placeholder="Email">
 
-<main>
+<input id="password" type="password" placeholder="Password">
 
-<section id="home">
+<button onclick="login()">Login</button>
 
-<h2>Online Hosts</h2>
+<button onclick="showRegister()">Create Account</button>
 
-<div id="hostList"></div>
-
-</section>
-
-<section id="callScreen" class="hidden">
-
-<div class="videoArea">
-
-<video id="remoteVideo" autoplay playsinline></video>
-
-<video id="localVideo" autoplay muted playsinline></video>
-
-</div>
-
-<div class="callInfo">
-
-<div id="callTimer">
-00:00
 </div>
 
 </div>
 
-<div class="callButtons">
+<!-- REGISTER PAGE -->
 
-<button id="audioBtn">
-🎤 Audio
-</button>
+<div id="registerPage" class="hidden">
 
-<button id="videoBtn">
-📹 Video
-</button>
+<div class="loginBox">
 
-<button id="endBtn">
-❌ End
-</button>
+<h1>Create Account</h1>
+
+<input id="regName" placeholder="Full Name">
+
+<input id="regEmail" type="email" placeholder="Email">
+
+<input id="regPassword" type="password" placeholder="Password">
+
+<select id="accountType">
+
+<option value="user">User</option>
+
+<option value="host">Host</option>
+
+<option value="agency">Agency</option>
+
+</select>
+
+<button onclick="register()">Register</button>
+
+<button onclick="showLogin()">Back</button>
 
 </div>
 
-</section>
+</div>
 
-</main>
+<!-- HOME -->
 
-<nav class="bottomNav">
+<div id="homePage" class="hidden">
 
-<button>
-🏠
-</button>
-
-<button>
-💬
-</button>
-
-<button>
-🎁
-</button>
-
-<button>
-👤
-</button>
-
-</nav>
+<!-- Keep your current topbar, host cards and bottom navigation here -->
 
 </div>
 
 <script src="config.js"></script>
+<script src="firebase.js"></script>
 <script src="auth.js"></script>
-<script src="wallet.js"></script>
-<script src="call.js"></script>
-<script src="host.js"></script>
-<script src="agency.js"></script>
-<script src="admin.js"></script>
-<script src="dashboard.js"></script>
-<script src="ai.js"></script>
 <script src="app.js"></script>
 
-</body>
-                                          </html>
+  </body>
