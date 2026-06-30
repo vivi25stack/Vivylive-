@@ -1,19 +1,23 @@
-// Firebase SDK
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 
 import {
-getAuth
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 import {
-getFirestore
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+getFirestore,
+doc,
+setDoc,
+getDoc,
+updateDoc,
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-import {
-getStorage
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
-
-// Your Firebase Configuration
 const firebaseConfig = {
 
 apiKey: "AIzaSyAhO0SRR7DhA3iwy2F-aqOCk7PkxKs7vwA",
@@ -30,19 +34,23 @@ appId: "1:1042174110031:web:9c1d2ee22371d1ea807d3a"
 
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Services
 const auth = getAuth(app);
 
 const db = getFirestore(app);
 
-const storage = getStorage(app);
-
-// Export
 window.auth = auth;
 window.db = db;
-window.storage = storage;
 
-console.log("✅ Firebase Connected");
+window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+window.signOut = signOut;
+window.onAuthStateChanged = onAuthStateChanged;
+
+window.doc = doc;
+window.setDoc = setDoc;
+window.getDoc = getDoc;
+window.updateDoc = updateDoc;
+window.collection = collection;
+window.getDocs = getDocs;
