@@ -1,69 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vivy</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase -->
+    <script type="module" src="firebase.js"></script>
+
+    <!-- App Scripts -->
+    <script defer src="auth.js"></script>
+    <script defer src="app.js"></script>
+</head>
+
 <body>
 
-<!-- LOGIN PAGE -->
-<div id="loginPage">
+<!-- ================= LOGIN ================= -->
 
-<div class="loginBox">
+<div id="loginScreen" class="screen">
 
-<h1>💜 Vivy</h1>
+    <div class="logo">
+        <h1>💜 Vivy</h1>
+        <p>Meet New People Worldwide</p>
+    </div>
 
-<p>Meet New People Worldwide</p>
+    <div class="card">
 
-<input id="email" type="email" placeholder="Email">
+        <input
+        type="email"
+        id="loginEmail"
+        placeholder="Email">
 
-<input id="password" type="password" placeholder="Password">
+        <input
+        type="password"
+        id="loginPassword"
+        placeholder="Password">
 
-<button onclick="login()">Login</button>
+        <button id="loginBtn">
+            Login
+        </button>
 
-<button onclick="showRegister()">Create Account</button>
+        <button id="showRegisterBtn">
+            Create Account
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= REGISTER ================= -->
+
+<div id="registerScreen" class="screen hidden">
+
+    <div class="logo">
+        <h1>Create Account</h1>
+    </div>
+
+    <div class="card">
+
+        <input
+        type="text"
+        id="fullName"
+        placeholder="Full Name">
+
+        <input
+        type="email"
+        id="registerEmail"
+        placeholder="Email">
+
+        <input
+        type="password"
+        id="registerPassword"
+        placeholder="Password">
+
+        <select id="accountType">
+
+            <option value="user">
+                User
+            </option>
+
+            <option value="host">
+                Host
+            </option>
+
+            <option value="agency">
+                Agency
+            </option>
+
+        </select>
+
+        <button id="registerBtn">
+            Register
+        </button>
+
+        <button id="backLoginBtn">
+            Back
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= HOME ================= -->
+
+<div id="homeScreen" class="hidden">
+
+<header>
+
+<div class="topBar">
+
+<div class="title">
+
+<h2>💜 Vivy</h2>
+
+</div>
+
+<div class="wallet">
+
+🪙 <span id="coinBalance">0</span>
 
 </div>
 
 </div>
 
-<!-- REGISTER PAGE -->
+</header>
 
-<div id="registerPage" class="hidden">
+<main>
 
-<div class="loginBox">
+<div class="hostGrid">
 
-<h1>Create Account</h1>
+<div class="hostCard">
 
-<input id="regName" placeholder="Full Name">
+<img
+src="https://picsum.photos/300/400"
+class="hostImage">
 
-<input id="regEmail" type="email" placeholder="Email">
+<div class="hostInfo">
 
-<input id="regPassword" type="password" placeholder="Password">
+<h3>Demo Host</h3>
 
-<select id="accountType">
+<p>Online</p>
 
-<option value="user">User</option>
+<button class="callButton">
+Video Call
+</button>
 
-<option value="host">Host</option>
-
-<option value="agency">Agency</option>
-
-</select>
-
-<button onclick="register()">Register</button>
-
-<button onclick="showLogin()">Back</button>
+<button class="audioButton">
+Audio Call
+</button>
 
 </div>
 
 </div>
 
-<!-- HOME -->
+</div>
 
-<div id="homePage" class="hidden">
+</main>
 
-<!-- Keep your current topbar, host cards and bottom navigation here -->
+<nav class="bottomNav">
+
+<button id="navHome">
+🏠
+</button>
+
+<button id="navMessages">
+💬
+</button>
+
+<button id="navCalls">
+📞
+</button>
+
+<button id="navProfile">
+👤
+</button>
+
+</nav>
 
 </div>
 
-<script src="config.js"></script>
-<script src="firebase.js"></script>
-<script src="auth.js"></script>
-<script src="app.js"></script>
-
-  </body>
+</body>
+  </html>
