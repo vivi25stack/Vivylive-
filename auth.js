@@ -1,62 +1,127 @@
-import {
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-signOut
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+document.addEventListener("DOMContentLoaded", () => {
 
-const auth = window.auth;
+const loginScreen = document.getElementById("loginScreen");
+const registerScreen = document.getElementById("registerScreen");
+const homeScreen = document.getElementById("homeScreen");
+
+const loginBtn = document.getElementById("loginBtn");
+const showRegisterBtn = document.getElementById("showRegisterBtn");
+const registerBtn = document.getElementById("registerBtn");
+const backLoginBtn = document.getElementById("backLoginBtn");
+
+// Show Register Screen
+showRegisterBtn.addEventListener("click", () => {
+    loginScreen.classList.add("hidden");
+    registerScreen.classList.remove("hidden");
+});
+
+// Back to Login
+backLoginBtn.addEventListener("click", () => {
+    registerScreen.classList.add("hidden");
+    loginScreen.classList.remove("hidden");
+});
 
 // Register
-window.registerUser = async function(email,password){
+registerBtn.addEventListener("click", async () => {
 
-try{
+    const name = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value;
+    const type = document.getElementById("accountType").value;
 
-const user = await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
+    if(!name || !email || !password){
+        alert("Please fill all fields.");
+        return;
+    }
 
-alert("Registration Successful");
+    try{
 
-console.log(user.user.uid);
+        const userCredential =
+        await window.createUserWithEmailAndPassword(
+            window.auth,
+            email,
+            password
+        );
 
-}catch(err){
+        const uid = userCredential.user.uid;
 
-alert(err.message);
+        await window.setDoc(
+            window.doc(window.db,"users",uid),
+            {
+                uid:uid,
+                name:name,
+                email:email,
+                accountType:type,
+                coins:0,
+                approved:type==="user",
+                createdAt:new Date().toISOString()
+            }
+        );
 
-}
+        alert("Account created successfully.");
 
-}
+        registerScreen.classList.add("hidden");
+        homeScreen.classList.remove("hidden");
+
+    }catch(error){
+
+        alert(error.message);
+
+    }
+
+});
 
 // Login
-window.loginUser = async function(email,password){
+loginBtn.addEventListener("click", async ()=>{
 
-try{
+    const email=document.getElementById("loginEmail").value.trim();
+    const password=document.getElementById("loginPassword").value;
 
-const user = await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
+    try{
 
-alert("Welcome to Vivy ❤️");
+        await window.signInWithEmailAndPassword(
+            window.auth,
+            email,
+            password
+        );
 
-console.log(user.user.uid);
+    }catch(error){
 
-}catch(err){
+        alert(error.message);
 
-alert(err.message);
+    }
 
-}
+});
 
-}
+// Auth Listener
+window.onAuthStateChanged(window.auth, async(user)=>{
 
-// Logout
-window.logoutUser = async function(){
+    if(user){
 
-await signOut(auth);
+        loginScreen.classList.add("hidden");
+        registerScreen.classList.add("hidden");
+        homeScreen.classList.remove("hidden");
 
-alert("Logged Out");
+        const snap=await window.getDoc(
+            window.doc(window.db,"users",user.uid)
+        );
 
-  }
+        if(snap.exists()){
+
+            const data=snap.data();
+
+            document.getElementById("coinBalance").innerText=data.coins??0;
+
+        }
+
+    }else{
+
+        homeScreen.classList.add("hidden");
+        registerScreen.classList.add("hidden");
+        loginScreen.classList.remove("hidden");
+
+    }
+
+});
+
+});
