@@ -1,33 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Vivy</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase -->
+<script type="module" src="firebase.js"></script>
+
+</head>
+
+<body>
+
 <div id="app">
 
-<div class="login-screen">
+<header class="topbar">
 
-<div class="logo-card">
+<div class="logo">
+💜 VIVY
+</div>
 
-<img src="assets/images/logo.png" class="logo">
+<div class="coins">
+🪙 <span id="coinBalance">0</span>
+</div>
 
-<h1>VivyLive</h1>
+</header>
 
-<p>Premium Audio & Video Calling</p>
+<main>
+
+<section id="home">
+
+<h2>Online Hosts</h2>
+
+<div id="hostList"></div>
+
+</section>
+
+<section id="callScreen" class="hidden">
+
+<div class="videoArea">
+
+<video id="remoteVideo" autoplay playsinline></video>
+
+<video id="localVideo" autoplay muted playsinline></video>
 
 </div>
 
-<div class="login-card">
+<div class="callInfo">
 
-<button class="main-btn" id="userBtn">
-👤 Continue as User
+<div id="callTimer">
+00:00
+</div>
+
+</div>
+
+<div class="callButtons">
+
+<button id="audioBtn">
+🎤 Audio
 </button>
 
-<button class="main-btn host">
-🎤 Continue as Host
+<button id="videoBtn">
+📹 Video
 </button>
 
-<button class="secondary-btn">
-Create Account
+<button id="endBtn">
+❌ End
 </button>
 
 </div>
 
-</div>
+</section>
+
+</main>
+
+<nav class="bottomNav">
+
+<button>
+🏠
+</button>
+
+<button>
+💬
+</button>
+
+<button>
+🎁
+</button>
+
+<button>
+👤
+</button>
+
+</nav>
 
 </div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="wallet.js"></script>
+<script src="call.js"></script>
+<script src="host.js"></script>
+<script src="agency.js"></script>
+<script src="admin.js"></script>
+<script src="dashboard.js"></script>
+<script src="ai.js"></script>
+<script src="app.js"></script>
+
+</body>
+                                          </html>
