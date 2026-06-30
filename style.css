@@ -188,3 +188,74 @@ cursor:pointer;
 .bottomNav button:hover{
 color:#a855f7;
 }
+.loginBox{
+
+width:90%;
+max-width:380px;
+
+margin:80px auto;
+
+background:#1E293B;
+
+padding:30px;
+
+border-radius:20px;
+
+}
+
+.loginBox h1{
+
+text-align:center;
+
+margin-bottom:10px;
+
+}
+
+.loginBox p{
+
+text-align:center;
+
+margin-bottom:20px;
+
+color:#bbb;
+
+}
+
+.loginBox input,
+.loginBox select{
+
+width:100%;
+
+padding:14px;
+
+margin-bottom:15px;
+
+border:none;
+
+border-radius:10px;
+
+background:#334155;
+
+color:white;
+
+}
+
+.loginBox button{
+
+width:100%;
+
+padding:14px;
+
+margin-top:10px;
+
+border:none;
+
+border-radius:10px;
+
+background:#7C3AED;
+
+color:white;
+
+font-size:16px;
+
+  }
