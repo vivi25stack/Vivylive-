@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vivy Admin Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="topBar">
+
+<h2>👑 Vivy Admin Dashboard</h2>
+
+</div>
+
+<main>
+
+<div class="grid">
+
+<div class="card">
+
+<h3>👥 Users</h3>
+
+<h1 id="totalUsers">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>🎤 Hosts</h3>
+
+<h1 id="totalHosts">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>🏢 Agencies</h3>
+
+<h1 id="totalAgencies">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>📞 Calls</h3>
+
+<h1 id="totalCalls">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>🪙 Revenue</h3>
+
+<h1 id="totalRevenue">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>💵 Pending Withdrawals</h3>
+
+<h1 id="pendingWithdrawals">0</h1>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Host Approval</h2>
+
+<table width="100%">
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>Email</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="hostApprovalTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>Agency Approval</h2>
+
+<table width="100%">
+
+<thead>
+
+<tr>
+
+<th>Agency</th>
+
+<th>Owner</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="agencyApprovalTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>Agency Withdrawals</h2>
+
+<table width="100%">
+
+<thead>
+
+<tr>
+
+<th>Agency</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody id="withdrawalTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</main>
+
+<script src="firebase.js"></script>
+<script src="admin.js"></script>
+
+</body>
+
+  </html>
