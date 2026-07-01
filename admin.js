@@ -1,193 +1,165 @@
-// =======================================
-// VIVY ADMIN SYSTEM v1
-// =======================================
+// ==========================================
+// VIVY ADMIN DASHBOARD
+// ==========================================
 
-const ADMIN_EMAIL = "admin@vivy.com";
+async function loadAdminDashboard() {
 
-async function isAdmin() {
-
-    const user = window.auth.currentUser;
-
-    if (!user) return false;
-
-    return user.email === ADMIN_EMAIL;
-
-}
-
-// =========================
-// APPROVE HOST
-// =========================
-
-async function approveHost(hostUid) {
-
-    if (!(await isAdmin())) return;
-
-    await window.updateDoc(
-        window.doc(window.db, "hosts", hostUid),
-        {
-            approved: true,
-            status: "offline"
-        }
+    const users = await window.getDocs(
+        window.collection(window.db, "users")
     );
 
-    await window.updateDoc(
-        window.doc(window.db, "users", hostUid),
-        {
-            approved: true
-        }
+    const hosts = await window.getDocs(
+        window.collection(window.db, "hosts")
     );
 
-    alert("Host Approved.");
-
-}
-
-// =========================
-// REJECT HOST
-// =========================
-
-async function rejectHost(hostUid) {
-
-    if (!(await isAdmin())) return;
-
-    await window.updateDoc(
-        window.doc(window.db, "hosts", hostUid),
-        {
-            approved: false
-        }
+    const agencies = await window.getDocs(
+        window.collection(window.db, "agencies")
     );
 
-    alert("Host Rejected.");
-
-}
-
-// =========================
-// APPROVE AGENCY
-// =========================
-
-async function approveAgency(agencyUid) {
-
-    if (!(await isAdmin())) return;
-
-    await window.updateDoc(
-        window.doc(window.db, "agencies", agencyUid),
-        {
-            approved: true
-        }
+    const withdrawals = await window.getDocs(
+        window.collection(window.db, "agencyWithdrawals")
     );
 
-    alert("Agency Approved.");
+    let totalCalls = 0;
+    let totalRevenue = 0;
+    let pendingWithdrawals = 0;
 
-}
+    document.getElementById("totalUsers").innerText = users.size;
+    document.getElementById("totalHosts").innerText = hosts.size;
+    document.getElementById("totalAgencies").innerText = agencies.size;
 
-// =========================
-// REJECT AGENCY
-// =========================
+    // ==========================
+    // HOST APPROVAL TABLE
+    // ==========================
 
-async function rejectAgency(agencyUid) {
+    const hostTable = document.getElementById("hostApprovalTable");
+    hostTable.innerHTML = "";
 
-    if (!(await isAdmin())) return;
+    hosts.forEach(doc => {
 
-    await window.updateDoc(
-        window.doc(window.db, "agencies", agencyUid),
-        {
-            approved: false
-        }
-    );
+        const host = doc.data();
 
-    alert("Agency Rejected.");
+        totalCalls += host.totalCalls || 0;
+        totalRevenue += host.totalCoins || 0;
 
-}
+        hostTable.innerHTML += `
 
-// =========================
-// PAY AGENCY
-// =========================
+        <tr>
 
-async function payAgency(agencyUid, usdAmount, txHash) {
+            <td>${host.displayName || "-"}</td>
 
-    if (!(await isAdmin())) return;
+            <td>${host.email || "-"}</td>
 
-    const ref = window.doc(window.db, "agencies", agencyUid);
+            <td>${host.approved ? "Approved" : "Pending"}</td>
 
-    const snap = await window.getDoc(ref);
+            <td>
 
-    if (!snap.exists()) return;
+                <button onclick="approveHost('${doc.id}')">
 
-    const agency = snap.data();
+                Approve
 
-    await window.updateDoc(ref, {
+                </button>
 
-        totalCoins: 0,
+            </td>
 
-        totalPaidUSD:
-            (agency.totalPaidUSD || 0) + usdAmount
+        </tr>
+
+        `;
 
     });
 
-    await window.setDoc(
+    // ==========================
+    // AGENCY APPROVAL TABLE
+    // ==========================
 
-        window.doc(
-            window.db,
-            "payroll",
-            Date.now().toString()
-        ),
+    const agencyTable = document.getElementById("agencyApprovalTable");
+    agencyTable.innerHTML = "";
 
-        {
+    agencies.forEach(doc => {
 
-            agencyId: agencyUid,
+        const agency = doc.data();
 
-            agencyName: agency.agencyName,
+        agencyTable.innerHTML += `
 
-            amountUSD: usdAmount,
+        <tr>
 
-            transactionHash: txHash,
+            <td>${agency.agencyName || "-"}</td>
 
-            paidAt: new Date().toISOString()
+            <td>${agency.ownerName || "-"}</td>
+
+            <td>${agency.approved ? "Approved" : "Pending"}</td>
+
+            <td>
+
+                <button onclick="approveAgency('${doc.id}')">
+
+                Approve
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    // ==========================
+    // WITHDRAWALS
+    // ==========================
+
+    const withdrawalTable =
+        document.getElementById("withdrawalTable");
+
+    withdrawalTable.innerHTML = "";
+
+    withdrawals.forEach(doc => {
+
+        const item = doc.data();
+
+        if (item.status === "Pending") {
+
+            pendingWithdrawals++;
 
         }
 
-    );
+        withdrawalTable.innerHTML += `
 
-    alert("Agency Paid Successfully.");
+        <tr>
 
-}
+            <td>${item.agencyName}</td>
 
-// =========================
-// DASHBOARD STATS
-// =========================
+            <td>$${item.amountUSD}</td>
 
-async function adminStats() {
+            <td>${item.status}</td>
 
-    if (!(await isAdmin())) return;
+        </tr>
 
-    const hosts =
-        await window.getDocs(
-            window.collection(window.db, "hosts")
-        );
+        `;
 
-    const agencies =
-        await window.getDocs(
-            window.collection(window.db, "agencies")
-        );
+    });
 
-    const withdrawals =
-        await window.getDocs(
-            window.collection(window.db, "agencyWithdrawals")
-        );
+    document.getElementById("totalCalls").innerText = totalCalls;
 
-    console.log("Hosts:", hosts.size);
+    document.getElementById("totalRevenue").innerText =
+        "$" + (totalRevenue / 1000).toFixed(2);
 
-    console.log("Agencies:", agencies.size);
-
-    console.log("Withdrawals:", withdrawals.size);
+    document.getElementById("pendingWithdrawals").innerText =
+        pendingWithdrawals;
 
 }
 
-window.approveHost = approveHost;
-window.rejectHost = rejectHost;
+window.addEventListener("load", () => {
 
-window.approveAgency = approveAgency;
-window.rejectAgency = rejectAgency;
+    window.onAuthStateChanged(window.auth, user => {
 
-window.payAgency = payAgency;
+        if (user) {
 
-window.adminStats = adminStats;
+            loadAdminDashboard();
+
+        }
+
+    });
+
+});
