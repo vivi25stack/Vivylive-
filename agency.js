@@ -1,164 +1,84 @@
-// ==================================
-// VIVY AGENCY SYSTEM v1
-// ==================================
+// ==========================================
+// VIVY AGENCY DASHBOARD
+// ==========================================
 
-const MIN_WITHDRAW_USD = 10;
-const COINS_PER_DOLLAR = 1000;
-
-async function applyAsAgency(agencyName, invitationCode) {
-
-    const user = window.auth.currentUser;
-
-    if (!user) {
-        alert("Please login first.");
-        return;
-    }
-
-    const agency = {
-        uid: user.uid,
-        agencyName: agencyName,
-        invitationCode: invitationCode,
-        approved: false,
-        hosts: 0,
-        totalCoins: 0,
-        totalPaidUSD: 0,
-        createdAt: new Date().toISOString()
-    };
-
-    await window.setDoc(
-        window.doc(window.db, "agencies", user.uid),
-        agency
-    );
-
-    alert("Agency application submitted. Waiting for Admin approval.");
-
-}
-
-async function joinAgency(invitationCode) {
+async function loadAgencyDashboard() {
 
     const user = window.auth.currentUser;
 
     if (!user) return;
 
-    const agencies = await window.getDocs(
-        window.collection(window.db, "agencies")
+    const agencyRef = window.doc(window.db, "agencies", user.uid);
+    const agencySnap = await window.getDoc(agencyRef);
+
+    if (!agencySnap.exists()) {
+        alert("Agency not found.");
+        return;
+    }
+
+    let totalHosts = 0;
+    let onlineHosts = 0;
+    let totalCoins = 0;
+    let totalCalls = 0;
+
+    const tbody = document.getElementById("hostTable");
+    tbody.innerHTML = "";
+
+    const hosts = await window.getDocs(
+        window.collection(window.db, "hosts")
     );
 
-    let found = false;
+    hosts.forEach(doc => {
 
-    agencies.forEach(async(docSnap) => {
+        const host = doc.data();
 
-        const agency = docSnap.data();
+        if (host.agencyId !== user.uid) return;
 
-        if (
-            agency.invitationCode === invitationCode &&
-            agency.approved
-        ) {
+        totalHosts++;
 
-            await window.updateDoc(
-                window.doc(window.db, "hosts", user.uid),
-                {
-                    agencyId: agency.uid,
-                    agencyName: agency.agencyName
-                }
-            );
+        if (host.status === "online") {
+            onlineHosts++;
+        }
 
-            await window.updateDoc(
-                window.doc(window.db, "agencies", agency.uid),
-                {
-                    hosts: (agency.hosts || 0) + 1
-                }
-            );
+        totalCoins += host.totalCoins || 0;
+        totalCalls += host.totalCalls || 0;
 
-            found = true;
+        const usd = ((host.totalCoins || 0) / 1000).toFixed(2);
 
-            alert("Agency joined successfully.");
+        tbody.innerHTML += `
+        <tr>
+            <td>${host.displayName}</td>
+            <td>${host.status}</td>
+            <td>${host.totalCoins || 0}</td>
+            <td>$${usd}</td>
+        </tr>
+        `;
+
+    });
+
+    document.getElementById("totalHosts").innerText = totalHosts;
+    document.getElementById("onlineHosts").innerText = onlineHosts;
+    document.getElementById("totalCalls").innerText = totalCalls;
+    document.getElementById("totalCoins").innerText = totalCoins;
+
+    document.getElementById("weeklyCoins").innerText = totalCoins;
+    document.getElementById("monthlyCoins").innerText = totalCoins;
+
+    document.getElementById("agencyBalance").innerText =
+        (totalCoins / 1000).toFixed(2);
+
+}
+
+window.addEventListener("load", () => {
+
+    window.onAuthStateChanged(window.auth, user => {
+
+        if (user) {
+
+            loadAgencyDashboard();
 
         }
 
     });
 
-    if (!found) {
-
-        alert("Invalid invitation code.");
-
-    }
-
-}
-
-async function creditAgencyCoins(agencyId, coins) {
-
-    const ref = window.doc(window.db, "agencies", agencyId);
-
-    const snap = await window.getDoc(ref);
-
-    if (!snap.exists()) return;
-
-    const agency = snap.data();
-
-    await window.updateDoc(ref, {
-
-        totalCoins: (agency.totalCoins || 0) + coins
-
-    });
-
-}
-
-async function requestAgencyWithdrawal(usdtAddress) {
-
-    const user = window.auth.currentUser;
-
-    if (!user) return;
-
-    const ref = window.doc(window.db, "agencies", user.uid);
-
-    const snap = await window.getDoc(ref);
-
-    if (!snap.exists()) {
-
-        alert("Agency not found.");
-
-        return;
-
-    }
-
-    const agency = snap.data();
-
-    const usd = agency.totalCoins / COINS_PER_DOLLAR;
-
-    if (usd < MIN_WITHDRAW_USD) {
-
-        alert("Minimum withdrawal is $10.");
-
-        return;
-
-    }
-
-    const request = {
-
-        agencyId: user.uid,
-        agencyName: agency.agencyName,
-        coins: agency.totalCoins,
-        usd: usd,
-        usdtAddress: usdtAddress,
-        status: "Pending",
-        createdAt: new Date().toISOString()
-
-    };
-
-    await window.setDoc(
-
-        window.doc(window.db, "agencyWithdrawals", Date.now().toString()),
-
-        request
-
-    );
-
-    alert("Withdrawal request sent to Admin.");
-
-}
-
-window.applyAsAgency = applyAsAgency;
-window.joinAgency = joinAgency;
-window.creditAgencyCoins = creditAgencyCoins;
-window.requestAgencyWithdrawal = requestAgencyWithdrawal;
+});
