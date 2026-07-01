@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vivy Host Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="dark">
+
+<div class="dashboard">
+
+<div class="topBar">
+
+<h2>💜 Host Dashboard</h2>
+
+<div class="coins">
+
+🪙 <span id="hostCoins">0</span>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Today's Earnings</h3>
+
+<h1 id="todayCoins">0 Coins</h1>
+
+<p>$<span id="todayUSD">0.00</span></p>
+
+</div>
+
+<div class="grid">
+
+<div class="smallCard">
+
+<h4>Weekly</h4>
+
+<p id="weeklyCoins">0 Coins</p>
+
+</div>
+
+<div class="smallCard">
+
+<h4>Monthly</h4>
+
+<p id="monthlyCoins">0 Coins</p>
+
+</div>
+
+<div class="smallCard">
+
+<h4>Lifetime</h4>
+
+<p id="totalCoins">0 Coins</p>
+
+</div>
+
+<div class="smallCard">
+
+<h4>Total Calls</h4>
+
+<p id="totalCalls">0</p>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Performance</h3>
+
+<p>⭐ Rating:
+<span id="rating">5.0</span></p>
+
+<p>📞 Minutes:
+<span id="minutes">0</span></p>
+
+<p>🎁 Gifts:
+<span id="giftCount">0</span></p>
+
+<p>🏆 Level:
+<span id="hostLevel">Bronze</span></p>
+
+</div>
+
+<div class="card">
+
+<h3>Status</h3>
+
+<label>
+
+<input
+type="checkbox"
+id="onlineSwitch">
+
+Online
+
+</label>
+
+</div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="host.js"></script>
+
+</body>
+  </html>
