@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Agency Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="topBar">
+
+<h2>🏢 Agency Dashboard</h2>
+
+<div class="wallet">
+
+💰 $<span id="agencyBalance">0.00</span>
+
+</div>
+
+</div>
+
+<main>
+
+<div class="card">
+
+<h3>Agency Overview</h3>
+
+<p>Total Hosts:
+<span id="totalHosts">0</span></p>
+
+<p>Online Hosts:
+<span id="onlineHosts">0</span></p>
+
+<p>Total Calls:
+<span id="totalCalls">0</span></p>
+
+<p>Total Coins:
+<span id="totalCoins">0</span></p>
+
+<p>Weekly Earnings:
+<span id="weeklyCoins">0</span></p>
+
+<p>Monthly Earnings:
+<span id="monthlyCoins">0</span></p>
+
+</div>
+
+<div class="card">
+
+<h3>Your Hosts</h3>
+
+<table width="100%">
+
+<tr>
+
+<th>Name</th>
+
+<th>Status</th>
+
+<th>Coins</th>
+
+<th>USD</th>
+
+</tr>
+
+<tbody id="hostTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<button onclick="requestAgencyWithdrawal(prompt('Enter your USDT Wallet Address'))">
+
+Request USDT Withdrawal
+
+</button>
+
+</div>
+
+</main>
+
+</body>
+
+                         </html>
