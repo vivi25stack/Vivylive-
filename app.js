@@ -1,22 +1,80 @@
-function showRegister(){
+document.addEventListener("DOMContentLoaded", () => {
 
-document.getElementById("loginPage").classList.add("hidden");
-document.getElementById("registerPage").classList.remove("hidden");
+const walletBtn = document.getElementById("walletBtn");
+const navHome = document.getElementById("navHome");
+const navMessages = document.getElementById("navMessages");
+const navCalls = document.getElementById("navCalls");
+const navProfile = document.getElementById("navProfile");
 
-}
+walletBtn.addEventListener("click", () => {
+    alert("Wallet page coming soon.");
+});
 
-function showLogin(){
+navHome.addEventListener("click", () => {
+    alert("Home");
+});
 
-document.getElementById("registerPage").classList.add("hidden");
-document.getElementById("loginPage").classList.remove("hidden");
+navMessages.addEventListener("click", () => {
+    alert("Messages coming soon.");
+});
 
-}
+navCalls.addEventListener("click", () => {
+    alert("Call History coming soon.");
+});
 
-function openHome(){
+navProfile.addEventListener("click", async () => {
 
-document.getElementById("loginPage").classList.add("hidden");
-document.getElementById("registerPage").classList.add("hidden");
+    const user = window.auth.currentUser;
 
-document.getElementById("homePage").classList.remove("hidden");
+    if (!user) return;
 
-}
+    const snap = await window.getDoc(
+        window.doc(window.db, "users", user.uid)
+    );
+
+    if (!snap.exists()) {
+        alert("Profile not found.");
+        return;
+    }
+
+    const data = snap.data();
+
+    alert(
+`Name: ${data.name}
+
+Email: ${data.email}
+
+Account: ${data.accountType}
+
+Coins: ${data.coins}
+
+Approved: ${data.approved ? "Yes" : "Pending"}`
+    );
+
+});
+
+const videoButtons = document.querySelectorAll(".callButton");
+
+videoButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        alert("Video Calling will use ZEGOCLOUD.");
+
+    });
+
+});
+
+const audioButtons = document.querySelectorAll(".audioButton");
+
+audioButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        alert("Audio Calling will use ZEGOCLOUD.");
+
+    });
+
+});
+
+});
