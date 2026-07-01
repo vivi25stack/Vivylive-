@@ -1,80 +1,8 @@
-// ===============================
-// VIVY HOST SYSTEM v1
-// ===============================
+// ==========================================
+// VIVY HOST DASHBOARD
+// ==========================================
 
-const HOST_STATUS = {
-    OFFLINE: "offline",
-    ONLINE: "online",
-    BUSY: "busy"
-};
-
-async function applyAsHost(displayName, age, country, gender) {
-
-    const user = window.auth.currentUser;
-
-    if (!user) {
-        alert("Please login first.");
-        return;
-    }
-
-    const hostData = {
-        uid: user.uid,
-        displayName: displayName,
-        age: age,
-        country: country,
-        gender: gender,
-        accountType: "host",
-        approved: false,
-        agencyId: "",
-        agencyName: "",
-        status: HOST_STATUS.OFFLINE,
-        totalCoins: 0,
-        totalCalls: 0,
-        rating: 5,
-        profileImage: "",
-        createdAt: new Date().toISOString()
-    };
-
-    await window.setDoc(
-        window.doc(window.db, "hosts", user.uid),
-        hostData
-    );
-
-    alert("Host application submitted. Waiting for Admin approval.");
-
-}
-
-async function goOnline() {
-
-    const user = window.auth.currentUser;
-
-    if (!user) return;
-
-    await window.updateDoc(
-        window.doc(window.db, "hosts", user.uid),
-        {
-            status: HOST_STATUS.ONLINE
-        }
-    );
-
-}
-
-async function goOffline() {
-
-    const user = window.auth.currentUser;
-
-    if (!user) return;
-
-    await window.updateDoc(
-        window.doc(window.db, "hosts", user.uid),
-        {
-            status: HOST_STATUS.OFFLINE
-        }
-    );
-
-}
-
-async function addHostCoins(coins) {
+async function loadHostDashboard() {
 
     const user = window.auth.currentUser;
 
@@ -84,72 +12,119 @@ async function addHostCoins(coins) {
 
     const snap = await window.getDoc(ref);
 
-    if (!snap.exists()) return;
+    if (!snap.exists()) {
 
-    const data = snap.data();
+        alert("Host profile not found.");
 
-    await window.updateDoc(ref, {
+        return;
 
-        totalCoins: (data.totalCoins || 0) + coins,
+    }
 
-        totalCalls: (data.totalCalls || 0) + 1
+    const host = snap.data();
 
-    });
+    const totalCoins = host.totalCoins || 0;
+    const totalCalls = host.totalCalls || 0;
+    const totalMinutes = host.totalMinutes || 0;
+    const totalGifts = host.totalGifts || 0;
+    const rating = host.rating || 5;
+
+    document.getElementById("hostCoins").innerText = totalCoins;
+
+    document.getElementById("todayCoins").innerText =
+        (host.todayCoins || 0) + " Coins";
+
+    document.getElementById("todayUSD").innerText =
+        ((host.todayCoins || 0) / 1000).toFixed(2);
+
+    document.getElementById("weeklyCoins").innerText =
+        (host.weeklyCoins || 0) + " Coins";
+
+    document.getElementById("monthlyCoins").innerText =
+        (host.monthlyCoins || 0) + " Coins";
+
+    document.getElementById("totalCoins").innerText =
+        totalCoins + " Coins";
+
+    document.getElementById("totalCalls").innerText =
+        totalCalls;
+
+    document.getElementById("minutes").innerText =
+        totalMinutes;
+
+    document.getElementById("giftCount").innerText =
+        totalGifts;
+
+    document.getElementById("rating").innerText =
+        rating.toFixed(1);
+
+    document.getElementById("hostLevel").innerText =
+        calculateLevel(totalCoins);
+
+    document.getElementById("onlineSwitch").checked =
+        host.status === "online";
 
 }
 
-async function loadHosts() {
+function calculateLevel(coins){
 
-    const container = document.getElementById("hostList");
+    if(coins>=5000000) return "Elite";
 
-    if (!container) return;
+    if(coins>=2000000) return "Diamond";
 
-    container.innerHTML = "";
+    if(coins>=1000000) return "Platinum";
 
-    const query = await window.getDocs(
-        window.collection(window.db, "hosts")
+    if(coins>=500000) return "Gold";
+
+    if(coins>=100000) return "Silver";
+
+    return "Bronze";
+
+}
+
+async function toggleOnline(){
+
+    const user = window.auth.currentUser;
+
+    if(!user) return;
+
+    const status = document.getElementById("onlineSwitch").checked
+        ? "online"
+        : "offline";
+
+    await window.updateDoc(
+
+        window.doc(window.db,"hosts",user.uid),
+
+        {
+
+            status:status
+
+        }
+
     );
 
-    query.forEach(docSnap => {
+}
 
-        const host = docSnap.data();
+window.addEventListener("load",()=>{
 
-        if (!host.approved) return;
+    window.onAuthStateChanged(window.auth,user=>{
 
-        const card = document.createElement("div");
+        if(user){
 
-        card.className = "hostCard";
+            loadHostDashboard();
 
-        card.innerHTML = `
-            <img src="${host.profileImage || "https://picsum.photos/300"}" class="hostImage">
-
-            <div class="hostInfo">
-
-                <h3>${host.displayName}</h3>
-
-                <p>${host.country}</p>
-
-                <p>${host.status}</p>
-
-                <button onclick="startVideoCall('${host.uid}')">
-                    Video Call
-                </button>
-
-                <button onclick="startAudioCall('${host.uid}')">
-                    Audio Call
-                </button>
-
-            </div>
-        `;
-
-        container.appendChild(card);
+        }
 
     });
 
-}
+});
 
-window.applyAsHost = applyAsHost;
-window.loadHosts = loadHosts;
-window.goOnline = goOnline;
-window.goOffline = goOffline;
-window.addHostCoins = addHostCoins;
+document.addEventListener("change",(e)=>{
+
+    if(e.target.id==="onlineSwitch"){
+
+        toggleOnline();
+
+    }
+
+});
