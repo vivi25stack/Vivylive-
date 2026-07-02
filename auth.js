@@ -9,75 +9,89 @@ const showRegisterBtn = document.getElementById("showRegisterBtn");
 const registerBtn = document.getElementById("registerBtn");
 const backLoginBtn = document.getElementById("backLoginBtn");
 
-// Show Register Screen
-showRegisterBtn.addEventListener("click", () => {
+// Show Register
+showRegisterBtn.onclick = () => {
     loginScreen.classList.add("hidden");
     registerScreen.classList.remove("hidden");
-});
+};
 
 // Back to Login
-backLoginBtn.addEventListener("click", () => {
+backLoginBtn.onclick = () => {
     registerScreen.classList.add("hidden");
     loginScreen.classList.remove("hidden");
-});
+};
 
 // Register
-registerBtn.addEventListener("click", async () => {
+registerBtn.onclick = async () => {
 
     const name = document.getElementById("fullName").value.trim();
     const email = document.getElementById("registerEmail").value.trim();
     const password = document.getElementById("registerPassword").value;
     const type = document.getElementById("accountType").value;
 
-    if(!name || !email || !password){
+    if (!name || !email || !password) {
         alert("Please fill all fields.");
         return;
     }
 
-    try{
+    try {
 
-        const userCredential =
-        await window.createUserWithEmailAndPassword(
+        const result = await window.createUserWithEmailAndPassword(
             window.auth,
             email,
             password
         );
 
-        const uid = userCredential.user.uid;
+        const uid = result.user.uid;
 
+        // User document
         await window.setDoc(
-            window.doc(window.db,"users",uid),
+            window.doc(window.db, "users", uid),
             {
-                uid:uid,
-                name:name,
-                email:email,
-                accountType:type,
-                coins:0,
-                approved:type==="user",
-                createdAt:new Date().toISOString()
+                uid: uid,
+                name: name,
+                email: email,
+                accountType: type,
+                avatar: "images/default-avatar.png",
+                coins: 0,
+                approved: type === "user",
+                createdAt: Date.now()
             }
         );
 
-        alert("Account created successfully.");
+        // Wallet document
+        await window.setDoc(
+            window.doc(window.db, "wallets", uid),
+            {
+                coins: 0,
+                totalPurchased: 0,
+                totalSpent: 0,
+                createdAt: Date.now()
+            }
+        );
 
-        registerScreen.classList.add("hidden");
-        homeScreen.classList.remove("hidden");
+        alert("Registration Successful!");
 
-    }catch(error){
+    } catch (error) {
 
         alert(error.message);
 
     }
 
-});
+};
 
 // Login
-loginBtn.addEventListener("click", async ()=>{
+loginBtn.onclick = async () => {
 
-    const email=document.getElementById("loginEmail").value.trim();
-    const password=document.getElementById("loginPassword").value;
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
 
-    try{
+    if (!email || !password) {
+        alert("Enter email and password.");
+        return;
+    }
+
+    try {
 
         await window.signInWithEmailAndPassword(
             window.auth,
@@ -85,36 +99,35 @@ loginBtn.addEventListener("click", async ()=>{
             password
         );
 
-    }catch(error){
+    } catch (error) {
 
         alert(error.message);
 
     }
 
-});
+};
 
-// Auth Listener
-window.onAuthStateChanged(window.auth, async(user)=>{
+// Auth State
+window.onAuthStateChanged(window.auth, async (user) => {
 
-    if(user){
+    if (user) {
 
         loginScreen.classList.add("hidden");
         registerScreen.classList.add("hidden");
         homeScreen.classList.remove("hidden");
 
-        const snap=await window.getDoc(
-            window.doc(window.db,"users",user.uid)
-        );
+        const userRef = window.doc(window.db, "users", user.uid);
+        const snap = await window.getDoc(userRef);
 
-        if(snap.exists()){
+        if (snap.exists()) {
 
-            const data=snap.data();
+            const data = snap.data();
 
-            document.getElementById("coinBalance").innerText=data.coins??0;
+            document.getElementById("coinBalance").innerText = data.coins || 0;
 
         }
 
-    }else{
+    } else {
 
         homeScreen.classList.add("hidden");
         registerScreen.classList.add("hidden");
