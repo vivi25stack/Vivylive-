@@ -1,175 +1,115 @@
-// ===================================
-// VIVY WALLET SYSTEM v1
-// ===================================
-
-const COINS_PER_DOLLAR = 1000;
-const MIN_WITHDRAW_USD = 10;
-
-async function getCurrentUserData() {
-
-    const user = window.auth.currentUser;
-
-    if (!user) return null;
-
-    const ref = window.doc(window.db, "users", user.uid);
-
-    const snap = await window.getDoc(ref);
-
-    if (!snap.exists()) return null;
-
-    return snap.data();
-
-}
-
-async function addCoins(coins) {
-
-    const user = window.auth.currentUser;
-
-    if (!user) return;
-
-    const ref = window.doc(window.db, "users", user.uid);
-
-    const snap = await window.getDoc(ref);
-
-    const balance = (snap.data().coins || 0) + coins;
-
-    await window.updateDoc(ref, {
-
-        coins: balance
-
-    });
-
-    updateWalletUI(balance);
-
-}
-
-async function deductCoins(coins) {
-
-    const user = window.auth.currentUser;
-
-    if (!user) return false;
-
-    const ref = window.doc(window.db, "users", user.uid);
-
-    const snap = await window.getDoc(ref);
-
-    let balance = snap.data().coins || 0;
-
-    if (balance < coins) {
-
-        alert("Insufficient coins.");
-
-        return false;
-
-    }
-
-    balance -= coins;
-
-    await window.updateDoc(ref, {
-
-        coins: balance
-
-    });
-
-    updateWalletUI(balance);
-
-    return true;
-
-}
-
-function updateWalletUI(balance) {
-
-    const coin = document.getElementById("coinBalance");
-
-    if (coin)
-
-        coin.innerText = balance;
-
-}
-
-function coinsToDollar(coins) {
-
-    return coins / COINS_PER_DOLLAR;
-
-}
-
-function dollarToCoins(dollar) {
-
-    return dollar * COINS_PER_DOLLAR;
-
-}
-
-function canWithdraw(coins) {
-
-    return coinsToDollar(coins) >= MIN_WITHDRAW_USD;
-
-}
-
-async function requestWithdrawal(usdtAddress) {
-
-    const user = await getCurrentUserData();
-
-    if (!user) return;
-
-    if (user.accountType !== "agency") {
-
-        alert("Only Agencies can withdraw.");
-
-        return;
-
-    }
-
-    if (!canWithdraw(user.coins)) {
-
-        alert("Minimum withdrawal is $10.");
-
-        return;
-
-    }
-
-    const withdrawal = {
-
-        uid: window.auth.currentUser.uid,
-
-        amountCoins: user.coins,
-
-        amountUSD: coinsToDollar(user.coins),
-
-        usdt: usdtAddress,
-
-        status: "Pending",
-
-        createdAt: new Date().toISOString()
-
-    };
-
-    const id = Date.now().toString();
-
-    await window.setDoc(
-
-        window.doc(window.db, "withdrawals", id),
-
-        withdrawal
-
-    );
-
-    alert("Withdrawal request sent to Admin.");
-
-}
+import {
+collection,
+doc,
+getDoc,
+getDocs,
+query,
+where,
+orderBy,
+limit
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+const balanceText = document.getElementById("coinBalance");
+const packageContainer = document.getElementById("packageContainer");
+const transactionContainer = document.getElementById("transactionContainer");
+
+const user = auth.currentUser;
 
 async function loadWallet() {
 
-    const user = await getCurrentUserData();
-
     if (!user) return;
 
-    updateWalletUI(user.coins);
+    const walletRef = doc(db, "wallets", user.uid);
+    const walletSnap = await getDoc(walletRef);
+
+    if (walletSnap.exists()) {
+
+        const wallet = walletSnap.data();
+
+        balanceText.innerText = wallet.coins || 0;
+
+    } else {
+
+        balanceText.innerText = "0";
+
+    }
 
 }
 
-window.addCoins = addCoins;
-window.deductCoins = deductCoins;
-window.loadWallet = loadWallet;
-window.requestWithdrawal = requestWithdrawal;
-window.coinsToDollar = coinsToDollar;
-window.dollarToCoins = dollarToCoins;
+async function loadPackages() {
+
+    packageContainer.innerHTML = "";
+
+    const snapshot = await getDocs(collection(db, "coinPackages"));
+
+    snapshot.forEach((docSnap) => {
+
+        const pack = docSnap.data();
+
+        if (!pack.active) return;
+
+        packageContainer.innerHTML += `
+
+        <div class="packageCard"
+        onclick="buyPackage('${docSnap.id}')">
+
+            <h3>${pack.coins + pack.bonus} Coins</h3>
+
+            <p class="price">$${pack.price}</p>
+
+            <small>Bonus: ${pack.bonus}</small>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+async function loadTransactions() {
+
+    transactionContainer.innerHTML = "";
+
+    const q = query(
+        collection(db, "transactions"),
+        where("userId", "==", user.uid),
+        orderBy("createdAt", "desc"),
+        limit(10)
+    );
+
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach((docSnap) => {
+
+        const tx = docSnap.data();
+
+        transactionContainer.innerHTML += `
+
+        <div class="transaction">
+
+            <b>${tx.type}</b><br>
+
+            ${tx.coins} Coins<br>
+
+            ${tx.status}
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+window.buyPackage = function(packageId){
+
+    alert("Selected Package: " + packageId);
+
+    // Next step:
+    // Launch Paystack or Flutterwave
+};
+
+loadWallet();
+loadPackages();
+loadTransactions();
