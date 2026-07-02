@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Vivy Wallet</title>
 
 <link rel="stylesheet" href="wallet.css">
@@ -13,7 +17,7 @@
 
 <div class="walletHeader">
 
-<h2>My Wallet</h2>
+<h2>💜 Vivy Wallet</h2>
 
 <p class="coinBalance">
 
@@ -35,11 +39,26 @@
 
 <h3>Recent Transactions</h3>
 
-<div id="transactionContainer"></div>
+<div id="transactionContainer">
+
+<p>No transactions yet.</p>
 
 </div>
 
+</div>
+
+<!-- Paystack SDK -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<!-- Firebase -->
+<script type="module" src="firebase.js"></script>
+
+<!-- Paystack -->
+<script src="paystack.js"></script>
+
+<!-- Wallet -->
 <script type="module" src="wallet.js"></script>
 
 </body>
-</html>
+
+  </html>
