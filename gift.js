@@ -1,175 +1,53 @@
-// ==========================================
-// VIVY GIFT SYSTEM v1
-// ==========================================
+import {
 
-const GIFTS = [
+collection,
+getDocs
 
-{
-id:1,
-name:"Rose",
-coins:100,
-emoji:"🌹"
-},
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-{
-id:2,
-name:"Heart",
-coins:300,
-emoji:"❤️"
-},
+const grid=document.getElementById("giftGrid");
 
-{
-id:3,
-name:"Coffee",
-coins:500,
-emoji:"☕"
-},
+async function loadGifts(){
 
-{
-id:4,
-name:"Cake",
-coins:1000,
-emoji:"🎂"
-},
+const snapshot=await getDocs(collection(db,"gifts"));
 
-{
-id:5,
-name:"Teddy",
-coins:2000,
-emoji:"🧸"
-},
+grid.innerHTML="";
 
-{
-id:6,
-name:"Diamond",
-coins:5000,
-emoji:"💎"
-},
+snapshot.forEach(doc=>{
 
-{
-id:7,
-name:"Sports Car",
-coins:10000,
-emoji:"🏎️"
-},
+const gift=doc.data();
 
-{
-id:8,
-name:"Private Jet",
-coins:50000,
-emoji:"✈️"
-}
+grid.innerHTML+=`
 
-];
+<div class="giftCard"
 
-// ==============================
-// Show Gifts
-// ==============================
+onclick="sendGift('${doc.id}')">
 
-function loadGifts(){
+<div class="giftEmoji">${gift.emoji}</div>
 
-console.table(GIFTS);
+<div class="giftName">${gift.name}</div>
 
-}
+<div class="giftCoins">🪙 ${gift.coins}</div>
 
-// ==============================
-// Send Gift
-// ==============================
+</div>
 
-async function sendGift(hostUid,giftId){
-
-const gift=GIFTS.find(g=>g.id===giftId);
-
-if(!gift){
-
-alert("Gift not found.");
-
-return;
-
-}
-
-const success=await deductCoins(gift.coins);
-
-if(!success) return;
-
-// Credit Host
-
-const ref=window.doc(window.db,"hosts",hostUid);
-
-const snap=await window.getDoc(ref);
-
-if(!snap.exists()) return;
-
-const host=snap.data();
-
-await window.updateDoc(ref,{
-
-totalCoins:(host.totalCoins||0)+gift.coins
-
-});
-
-// Credit Agency
-
-if(host.agencyId){
-
-const agencyRef=window.doc(window.db,"agencies",host.agencyId);
-
-const agencySnap=await window.getDoc(agencyRef);
-
-if(agencySnap.exists()){
-
-const agency=agencySnap.data();
-
-await window.updateDoc(agencyRef,{
-
-totalCoins:(agency.totalCoins||0)+gift.coins
+`;
 
 });
 
 }
 
-}
+window.sendGift=async(id)=>{
 
-await window.setDoc(
+alert("Gift Selected : "+id);
 
-window.doc(
-
-window.db,
-
-"giftHistory",
-
-Date.now().toString()
-
-),
-
-{
-
-hostUid:hostUid,
-
-gift:gift.name,
-
-coins:gift.coins,
-
-sender:window.auth.currentUser.uid,
-
-createdAt:new Date().toISOString()
+// Next upgrade:
+// deduct wallet
+// add host earnings
+// agency earnings
+// leaderboard
+// animation
 
 }
 
-);
-
-alert(
-
-gift.emoji+
-
-" "+gift.name+
-
-" Sent!"
-
-);
-
-}
-
-window.loadGifts=loadGifts;
-
-window.sendGift=sendGift;
+loadGifts();
